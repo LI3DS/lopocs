@@ -2,6 +2,7 @@
 import json
 import time
 from concurrent.futures import ThreadPoolExecutor
+from multiprocessing import cpu_count
 
 from flask import Response
 import numpy
@@ -377,7 +378,7 @@ def build_hierarchy_from_pg(session, lod, lod_max, bbox):
 
         # run leaf in threads
         futures = {}
-        with ThreadPoolExecutor(max_workers=8) as e:
+        with ThreadPoolExecutor(max_workers=cpu_count() * 2) as e:
             futures["nwd"] = e.submit(build_hierarchy_from_pg_single, session, lod, lod_max, bbox_nwd)
             futures["nwu"] = e.submit(build_hierarchy_from_pg_single, session, lod, lod_max, bbox_nwu)
             futures["ned"] = e.submit(build_hierarchy_from_pg_single, session, lod, lod_max, bbox_ned)
